@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+</head>
+<body>
+    <canvas id="chart" height="100" width="400"></canvas>
+    <canvas id="chartBarrios" height="100" width="400"></canvas>
+
+
+<script>
+
+
+chartIt()
+chartBarrios()
+
+async function chartIt() {
+    const data = await getData()
+    const ctx = document.getElementById('chart');
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.xs,
+            datasets: [{
+                label: 'Global Average Temperature',
+                fill: false,
+                data: data.ys,
+                backgroundColor: 
+                    'rgba(255, 99, 132, 0.2)',
+                
+                borderColor: 
+                    'rgba(255, 99, 132, 1)',
+                
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: false,
+                        callback: function (value, index, values) {
+                            return value + 'º'
+                        }
+                    }
+                }]
+            }
+        }
+    });
+}
+
+async function chartBarrios() {
+    const data = await getBarrios()
+    const ctx = document.getElementById('chartBarrios');
+    const myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: data.xs,
+            datasets: [{
+                label: 'Barrios y comunas',
+                fill: false,
+                data: data.ys,
+                backgroundColor: 
+                    'rgba(255, 99, 132, 0.2)',
+                
+                borderColor: 
+                    'rgba(255, 99, 132, 1)',
+                
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: false,
+                        
+                    }
+                }]
+            }
+        }
+    });
+}
+
+
+
+
+async function getData() {
+    const response = await fetch('ZonAnn.Ts+dSST.csv')
+    const data = await response.text()
+    const table = data.split('\n').slice(1)
+    const xs = [];
+    const ys = [];
+    table.forEach(row => {
+        const columns = row.split(',')
+        const year = columns[0]
+        xs.push(year)
+        const temp = columns[1]
+        ys.push(parseFloat(temp) + 14)
+    })
+    return { xs, ys }
+}
+
+async function getBarrios() {
+    const response = await fetch('barrios.csv')
+    const data = await response.text()
+    const table = data.split('\n').slice(1)
+    const xs = []
+    const ys = []
+    table.forEach(row => {
+        const columns = row.split(',')
+        const barrio = columns[columns.length - 4]
+        xs.push(barrio)
+        const comuna = columns[columns.length - 3]
+        ys.push(comuna)
+        console.log(barrio, comuna);
+    })
+
+    return { xs, ys }
+    
+}
+
+
+
+</script>
+</body>
+</html>
