@@ -1,0 +1,24 @@
+{
+  "name": "api-js",
+  "version": "1.0.0",
+  "description": "selfie app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fbrunfman/api-js.git"
+  },
+  "keywords": [
+    "example",
+    "data",
+    "selfie"
+  ],
+  "author": "fede",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fbrunfman/api-js/issues"
+  },
+  "homepage": "https://github.com/fbrunfman/api-js#readme"
+}

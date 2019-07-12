@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+   <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+   integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+   crossorigin=""></script>
+    <title>Document</title>
+</head>
+<body>
+    <h2>Node Server</h2>
+
+    <p>
+        Tu latitud es <span id="lat"></span>&deg; <br>
+        Tu altitud es <span id="lon"></span>&deg;
+    </p>
+    
+    <button id="submit">submit</button>
+
+    <div id="yourLocation" style="height: 300px;"></div>
+<script>
+
+    var latitude = ''
+    var longitude = ''
+    const mymap = L.map('yourLocation').setView([0, 0], 1);
+    const marker = L.marker([0, 0]).addTo(mymap);
+    const button = document.getElementById('submit');
+
+    button.addEventListener('click', async event => {
+        const data = {latitude, longitude}
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }
+        const response = await fetch('/api', options)
+        const json = await response.json()
+        console.log(json);
+    })
+
+
+    if ('geolocation' in navigator) {
+        console.log('geolocation available');
+        navigator.geolocation.getCurrentPosition(position => {
+        latitude = position.coords.latitude;
+        document.getElementById('lat').textContent = latitude.toFixed(2);
+        longitude = position.coords.longitude;
+        document.getElementById('lon').textContent = longitude.toFixed(2);
+        marker.setLatLng([latitude, longitude]);
+        mymap.setView([latitude, longitude],15);
+
+        const data = {latitude, longitude}
+        const options = {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        fetch('/api', options).then(response => {
+            console.log(response)
+        })
+        });
+    } else {
+        console.log('geolocation not available');
+    }
+
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.streets',
+    accessToken: 'pk.eyJ1IjoiZmJydW5mbWFuIiwiYSI6ImNqeHpkZ2hlMjAxdm0zaHBqZHZhMnY3amsifQ.V1cPJQiLGIN6RddVUzk7FA'
+    }).addTo(mymap);
+
+
+</script>
+</body>
+
+<script>
+</script>
+</html>
